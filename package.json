@@ -1,0 +1,32 @@
+{
+    "name": "exyllian",
+    "version": "1.0.0",
+    "description": "Discord bot for a closed community called Exyl",
+    "main": "index.js",
+    "dependencies": {
+        "@discordjs/builders": "^0.6.0",
+        "@discordjs/rest": "^0.1.0-canary.0",
+        "discord-api-types": "^0.23.1",
+        "discord.js": "^13.1.0"
+    },
+    "scripts": {
+        "dev": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wylliemorth/exyllianbot.git"
+    },
+    "keywords": [
+        "discord",
+        "bot",
+        "community",
+        "simple"
+    ],
+    "author": "wylliemorth",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/wylliemorth/exyllianbot/issues"
+    },
+    "homepage": "https://github.com/wylliemorth/exyllianbot#readme"
+}
