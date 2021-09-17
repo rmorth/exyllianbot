@@ -1,4 +1,3 @@
-const { Interaction } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
@@ -43,6 +42,14 @@ module.exports = {
             {
                 type: "GUILD_TEXT",
                 parent: category,
+                permissionOverwrites: interaction.options.getBoolean("private")
+                    ? [
+                          {
+                              id: interaction.guild.roles.everyone.id,
+                              deny: ["VIEW_CHANNEL"],
+                          },
+                      ]
+                    : null,
             }
         );
 
