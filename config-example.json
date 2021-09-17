@@ -1,5 +1,6 @@
 {
     "token": "token",
     "clientId": "client_id",
-    "guildId": "server_id"
+    "guildId": "server_id",
+    "visitorRoleId": "visitor_role_id"
 }
