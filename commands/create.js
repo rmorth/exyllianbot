@@ -10,6 +10,11 @@ module.exports = {
                 .setDescription("Channel's name which you want to create.")
                 .setRequired(true)
         )
+        .addStringOption((option) =>
+            option
+                .setName("topic")
+                .setDescription("Channel's topic to display.")
+        )
         .addBooleanOption((option) =>
             option
                 .setName("private")
@@ -40,6 +45,7 @@ module.exports = {
         await interaction.guild.channels.create(
             interaction.options.getString("name"),
             {
+                topic: interaction.options.getString("topic"),
                 type: "GUILD_TEXT",
                 parent: category,
                 permissionOverwrites: interaction.options.getBoolean("private")
