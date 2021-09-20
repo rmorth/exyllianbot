@@ -3,7 +3,9 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("setpublic")
-        .setDescription("Set the channel where you sent the message as public.")
+        .setDescription(
+            "Set the channel where you sent the message as public for EVERYONE."
+        )
         .addBooleanOption((option) =>
             option
                 .setName("readonly")
@@ -14,6 +16,11 @@ module.exports = {
             await interaction.reply("Failed, this isn't your channel.");
             return;
         }
+
+        /**
+         * We reset permissions for disallowed users, else they'd still be disallowed from seeing the channel
+         */
+        await interaction.channel.lockPermissions();
 
         interaction.channel.permissionOverwrites.create(
             interaction.guild.roles.everyone,
