@@ -6,9 +6,9 @@ module.exports = {
         .setDescription(
             "Disallow user to see the channel where you sent the message."
         )
-        .addStringOption((option) =>
+        .addUserOption((option) =>
             option
-                .setName("id")
+                .setName("user")
                 .setDescription(
                     "User to disallow access to the channel where you sent this message."
                 )
@@ -20,17 +20,12 @@ module.exports = {
             return;
         }
 
-        member = await interaction.guild.members.fetch(
-            interaction.options.getString("id")
-        );
-
+        member = interaction.options.getUser("user");
         interaction.channel.permissionOverwrites.create(member, {
             VIEW_CHANNEL: false,
             SEND_MESSAGES: false,
         });
 
-        await interaction.reply(
-            `Successfully disallowed ${member.user.username}!`
-        );
+        await interaction.reply(`Successfully disallowed ${member.username}!`);
     },
 };

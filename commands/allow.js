@@ -6,9 +6,9 @@ module.exports = {
         .setDescription(
             "Allow user to see the channel where you sent the message."
         )
-        .addStringOption((option) =>
+        .addUserOption((option) =>
             option
-                .setName("id")
+                .setName("user")
                 .setDescription(
                     "User to allow access to the channel where you sent this message."
                 )
@@ -27,17 +27,12 @@ module.exports = {
             return;
         }
 
-        member = await interaction.guild.members.fetch(
-            interaction.options.getString("id")
-        );
-
+        let member = interaction.options.getUser("user");
         interaction.channel.permissionOverwrites.create(member, {
             VIEW_CHANNEL: true,
             SEND_MESSAGES: !interaction.options.getBoolean("readonly") ?? true,
         });
 
-        await interaction.reply(
-            `Successfully allowed ${member.user.username}!`
-        );
+        await interaction.reply(`Successfully allowed ${member.username}!`);
     },
 };
