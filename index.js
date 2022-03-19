@@ -1,6 +1,8 @@
 const fs = require("fs");
+const cron = require('node-cron');
 const { Client, Intents, Collection } = require("discord.js");
 const { token, visitorRoleId } = require("./config.json");
+const { checkReminders } = require('./reminders.js');
 
 // Create a new client instance
 const client = new Client({
@@ -23,8 +25,13 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-client.once("ready", () => {
+client.once("ready", async () => {
     console.log("Ready!");
+
+	/** Run every minute */
+	cron.schedule('* * * * *', async () => {
+		await checkReminders(client);
+	})
 });
 
 client.on("interactionCreate", async (interaction) => {

@@ -14,3 +14,5 @@ This list of commands will keep growing depending on Exyl's needs.
 - `flip <number?>`: flip a coin (or more).
 - `ping`: replies with pong (usually for testing).
 - `server`: get server info (name, member count and creation date).
+### SQLite3 Database
+`cat data/exylliandb.sql | sqlite3 data/ExyllianDB.db`
