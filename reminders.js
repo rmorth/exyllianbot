@@ -77,5 +77,32 @@ module.exports = {
 				console.log('Closed connection to Exyllian\'s SQLite database.');
 			});
 		});
+	},
+	createReminder: function (userId, message, timestamp) {
+		let db = new sqlite.Database('./data/ExyllianDB.db', sqlite.OPEN_READWRITE, (err) => {
+			if (err) {
+				return console.error(err.message);
+			}
+
+			console.log('Connected to Exyllian\'s SQLite database.');
+		});
+
+		const sql = `INSERT INTO REMINDERS (USER_ID, MESSAGE, TIMESTAMP) VALUES (?,?,?);`;
+		db.run(sql, [userId, message, timestamp], (err) => {
+			if (err) {
+				console.error(err.message);
+				return;
+			}
+		});
+
+		/** 6. Close database connection */
+		db.close((err) => {
+			if (err) {
+				return console.error(err.message);
+			}
+
+			console.log('Closed connection to Exyllian\'s SQLite database.');
+		});
 	}
+
 }
