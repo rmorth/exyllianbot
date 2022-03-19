@@ -9,7 +9,7 @@
         "discord-api-types": "^0.23.1",
         "discord.js": "^13.1.0",
         "node-cron": "^3.0.0",
-        "sqlite3": "^5.0.2"
+        "sqlite3": "^4.2.0"
     },
     "scripts": {
         "dev": "node index.js",
