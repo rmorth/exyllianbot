@@ -1,8 +1,6 @@
-const sqlite = require('sqlite3');
+const database = require('./database.js');
 
 async function sendReminder(client, userId, message) {
-	console.log(`Sending reminder to ${userId}.`);
-
 	const user = await client.users.fetch(userId).catch(() => null);
 	if (!user) {
 		console.log(`Couldn't find user with id ${userId}.`);
@@ -18,91 +16,59 @@ async function sendReminder(client, userId, message) {
 	return true;
 }
 
-function deleteReminder(db, id) {
-	db.run(`DELETE FROM REMINDERS WHERE id=?`, id, (err) => {
+function createReminder(userId, message, timestamp) {
+	let conn = database.open();
+
+	const sql = `INSERT INTO REMINDERS (USER_ID, MESSAGE, TIMESTAMP) VALUES (?,?,?);`;
+	database.run(conn, sql, [userId, message, timestamp]);
+
+	database.close(conn);
+}
+
+function deleteReminder(conn, id) {
+	const sql = `DELETE FROM REMINDERS WHERE id=?`;
+	database.run(conn, sql, [id]);
+}
+
+async function checkReminders(client) {
+	let conn = database.open();
+
+	/** Read reminders from database */
+	const sql = `SELECT * FROM REMINDERS ORDER BY TIMESTAMP`;
+	conn.all(sql, [], async (err, rows) => {
 		if (err) return console.error(err.message);
 
-		console.log(`Reminder with id ${id} deleted.`);
-	})
+		console.log(`There are currently ${rows.length} reminders to send out.`);
+		let sent = 0;
+
+		for (const row of rows) {
+			const reminderTs = parseInt(row.TIMESTAMP);
+			let ms = parseInt(Date.now());
+
+			// It's ordered by timestamp
+			if (reminderTs > ms) break;
+
+			/** Compare reminder timestamp with current one */
+			if (reminderTs <= ms) {
+				/** Send reminder */
+				let sent = await sendReminder(client, row.USER_ID, row.MESSAGE);
+				if (!sent) {
+					// TODO: Need to add a try mechanism to prevent DB from clogging
+					continue;
+				}
+
+				/** Delete reminder entry from database */
+				deleteReminder(conn, row.ID);
+				sent++;
+			}
+		}
+
+		console.log(`Sent ${sent}/${rows.length} reminder(s).`);
+		database.close(conn);
+	});
 }
 
 module.exports = {
-	checkReminders: async function (client) {
-		console.log("Checking reminders to send out.");
-
-		/** 1. Start database connection */
-		let db = new sqlite.Database('./data/ExyllianDB.db', sqlite.OPEN_READWRITE, (err) => {
-			if (err) {
-				return console.error(err.message);
-			}
-
-			console.log('Connected to Exyllian\'s SQLite database.');
-		});
-
-		/** 2. Read reminders from database */
-		const sql = `SELECT * FROM REMINDERS ORDER BY TIMESTAMP`;
-		db.all(sql, [], async (err, rows) => {
-			if (err) throw err;
-
-			console.log(`There are currently ${rows.length} reminders to send out.`);
-
-			for (const row of rows) {
-				const reminderTs = parseInt(row.TIMESTAMP);
-				let ms = parseInt(Date.now());
-
-				// It's ordered by timestamp
-				if (reminderTs > ms) break;
-
-				/** 3. Compare reminder timestamp with current one */
-				if (reminderTs <= ms) {
-					/** 4. Send reminder */
-					let sent = await sendReminder(client, row.USER_ID, row.MESSAGE);
-					if (!sent) {
-						// TODO: Need to add a try mechanism to prevent DB from clogging
-						continue;
-					}
-
-					/** 5. Delete reminder entry from database */
-					console.log("Deleting reminder entry from database.");
-					deleteReminder(db, row.ID);
-				}
-			}
-
-			/** 6. Close database connection */
-			db.close((err) => {
-				if (err) {
-					return console.error(err.message);
-				}
-
-				console.log('Closed connection to Exyllian\'s SQLite database.');
-			});
-		});
-	},
-	createReminder: function (userId, message, timestamp) {
-		let db = new sqlite.Database('./data/ExyllianDB.db', sqlite.OPEN_READWRITE, (err) => {
-			if (err) {
-				return console.error(err.message);
-			}
-
-			console.log('Connected to Exyllian\'s SQLite database.');
-		});
-
-		const sql = `INSERT INTO REMINDERS (USER_ID, MESSAGE, TIMESTAMP) VALUES (?,?,?);`;
-		db.run(sql, [userId, message, timestamp], (err) => {
-			if (err) {
-				console.error(err.message);
-				return;
-			}
-		});
-
-		/** 6. Close database connection */
-		db.close((err) => {
-			if (err) {
-				return console.error(err.message);
-			}
-
-			console.log('Closed connection to Exyllian\'s SQLite database.');
-		});
-	}
-
+	checkReminders,
+	createReminder
 }

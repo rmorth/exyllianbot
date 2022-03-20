@@ -30,6 +30,7 @@ client.once("ready", async () => {
 
 	/** Run every minute */
 	cron.schedule('* * * * *', async () => {
+		console.log("Checking reminders to send out.");
 		await checkReminders(client);
 	})
 });
