@@ -16,4 +16,5 @@ This list of commands will keep growing depending on Exyl's needs.
 - `server`: get server info (name, member count and creation date).
 ## Database
 Uses `sqlite3`. Use the following command to create the appropriate database with the right name. 
+
 `cat data/exylliandb.sql | sqlite3 data/ExyllianDB.db`
