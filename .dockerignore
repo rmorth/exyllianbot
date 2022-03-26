@@ -1,0 +1,11 @@
+.Dockerfile
+
+node_modules/
+
+.git/
+.gitignore
+
+config-example.json
+
+README.md
+LICENSE
