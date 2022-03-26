@@ -38,9 +38,7 @@ async function checkReminders(client) {
 	conn.all(sql, [], async (err, rows) => {
 		if (err) return console.error(err.message);
 
-		console.log(`There are currently ${rows.length} reminders to send out.`);
-		let sent = 0;
-
+		let sentCount = 0;
 		for (const row of rows) {
 			const reminderTs = parseInt(row.TIMESTAMP);
 			let ms = parseInt(Date.now());
@@ -59,11 +57,11 @@ async function checkReminders(client) {
 
 				/** Delete reminder entry from database */
 				deleteReminder(conn, row.ID);
-				sent++;
+				sentCount++;
 			}
 		}
 
-		console.log(`Sent ${sent}/${rows.length} reminder(s).`);
+		console.log(`Sent ${sentCount}/${rows.length} reminder(s).`);
 		database.close(conn);
 	});
 }
