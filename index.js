@@ -1,5 +1,4 @@
 const fs = require("fs");
-const cron = require('node-cron');
 const { Client, Intents, Collection } = require("discord.js");
 const { token, visitorRoleId } = require("./config.json");
 const { checkReminders } = require('./reminders.js');
@@ -29,10 +28,10 @@ client.once("ready", async () => {
     console.log("Ready!");
 
 	/** Run every minute */
-	cron.schedule('* * * * *', async () => {
+	setInterval (async () => {
 		console.log("Checking reminders to send out.");
 		await checkReminders(client);
-	})
+	}, 1000 * 60);
 });
 
 client.on("interactionCreate", async (interaction) => {
