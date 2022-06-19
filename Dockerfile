@@ -7,17 +7,15 @@ RUN apk update && apk add --no-cache \
 	g++ \
 	make \
 	python3 \
-	python2 \
-	sqlite
+	sqlite && cp $(which python3) /usr/bin/python
 
 WORKDIR /src/app
-COPY . .
+COPY package.json package-lock.json ./
 
 RUN npm install
-
-RUN apk del g++ make python3 python2
-
+COPY . .
+RUN apk del g++ make python3
 RUN cat data/exylliandb.sql | sqlite3 data/ExyllianDB.db
-
 RUN node deploy-commands.js
+
 CMD [ "node", "index.js" ]
