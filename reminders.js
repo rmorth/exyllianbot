@@ -19,7 +19,7 @@ async function sendReminder(client, userId, message) {
 function createReminder(userId, message, timestamp) {
 	let conn = database.open();
 
-	const sql = `INSERT INTO REMINDERS (USER_ID, MESSAGE, TIMESTAMP) VALUES (?,?,?);`;
+	const sql = `INSERT INTO reminders (USER_ID, MESSAGE, TIMESTAMP) VALUES (?,?,?);`;
 	database.run(conn, sql, [userId, message, timestamp]);
 
 	database.close(conn);
