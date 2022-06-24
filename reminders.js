@@ -1,4 +1,6 @@
 const database = require('./database.js');
+const moment = require("moment");
+const { MessageEmbed } = require("discord.js");
 
 async function sendReminder(client, userId, message) {
 	const user = await client.users.fetch(userId).catch(() => null);
@@ -12,21 +14,70 @@ async function sendReminder(client, userId, message) {
 		return false;
 	});
 
-
 	return true;
+}
+
+async function getReminders(user) {
+	const truncateLength = 40;
+	let conn = database.open();
+
+
+	const sql = `SELECT * FROM reminders WHERE user_id = ? ORDER BY timestamp`;
+	conn.all(sql, [user.id], async (err, rows) => {
+		if (err) return console.error(err.message);
+
+		if (!rows || rows.length == 0) {
+			await user.send("You have no active reminders.");
+			return;
+		}
+
+		let message = "Currently active reminders.\n";
+		rows.forEach(r => {
+			let text = r.message;
+
+			const date = moment
+				.unix(Math.floor(r.timestamp / 1000))
+				.format("YYYY-MM-DD HH:mm");
+
+			if (text.length > truncateLength) {
+				text = text.substring(0, truncateLength) + "...";
+			}
+
+			message += `\n\`${date}\` - **${text}**`
+		});
+
+		message += `\n\n*Total: ${rows.length}*`;
+
+		const reminderEmbed = new MessageEmbed()
+		.setColor('#fe8b68')
+		.setTitle("Your Reminders")
+		.setDescription(message)
+		.setTimestamp()
+		.setAuthor({
+			name: user.username,
+			iconURL: user.avatarURL()
+		});
+
+		await user.send({
+			embeds: [reminderEmbed],
+			text: ""
+		});
+	});
+
+	database.close(conn);
 }
 
 function createReminder(userId, message, timestamp) {
 	let conn = database.open();
 
-	const sql = `INSERT INTO reminders (USER_ID, MESSAGE, TIMESTAMP) VALUES (?,?,?);`;
+	const sql = `INSERT INTO reminders (user_id, message, timestamp) VALUES (?,?,?)`;
 	database.run(conn, sql, [userId, message, timestamp]);
 
 	database.close(conn);
 }
 
 function deleteReminder(conn, id) {
-	const sql = `DELETE FROM REMINDERS WHERE id=?`;
+	const sql = `DELETE FROM reminders WHERE id=?`;
 	database.run(conn, sql, [id]);
 }
 
@@ -34,7 +85,7 @@ async function checkReminders(client) {
 	let conn = database.open();
 
 	/** Read reminders from database */
-	const sql = `SELECT * FROM REMINDERS ORDER BY TIMESTAMP`;
+	const sql = `SELECT * FROM reminders ORDER BY timestamp`;
 	conn.all(sql, [], async (err, rows) => {
 		if (err) return console.error(err.message);
 
@@ -68,5 +119,6 @@ async function checkReminders(client) {
 
 module.exports = {
 	checkReminders,
-	createReminder
+	createReminder,
+	getReminders
 }
