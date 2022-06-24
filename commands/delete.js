@@ -22,11 +22,17 @@ module.exports = {
             channel.parent.type !== "GUILD_CATEGORY" ||
             channel.parent.name !== interaction.user.username
         ) {
-            await interaction.reply("Failed deleting the specified channel.");
+            await interaction.reply({
+				content: "Failed deleting the specified channel.",
+				ephemeral: true
+			});
             return;
         }
 
         await channel.delete();
-        await interaction.reply("Successfully deleted your channel!");
+        await interaction.reply({
+			content: "Successfully deleted your channel!",
+			ephemeral: true
+		});
     },
 };

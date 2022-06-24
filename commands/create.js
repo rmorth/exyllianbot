@@ -59,6 +59,9 @@ module.exports = {
             }
         );
 
-        await interaction.reply("Successfully created your channel!");
+        await interaction.reply({
+			content: "Successfully created your channel!",
+			ephemeral: true
+		});
     },
 };

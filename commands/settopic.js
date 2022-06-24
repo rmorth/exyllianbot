@@ -14,7 +14,11 @@ module.exports = {
         ),
     async execute(interaction) {
         if (interaction.channel.parent.name !== interaction.user.username) {
-            await interaction.reply("Failed, this isn't your channel.");
+            await interaction.reply({
+				content: "Failed, this isn't your channel.",
+				ephemeral: true
+			});
+
             return;
         }
 
@@ -22,6 +26,9 @@ module.exports = {
             topic: interaction.options.getString("topic"),
         });
 
-        await interaction.reply("Successfully set channel as public!");
+        await interaction.reply({
+			content: "Successfully set the channel's topic!",
+			ephemeral: true
+		});
     },
 };

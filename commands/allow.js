@@ -23,7 +23,10 @@ module.exports = {
         ),
     async execute(interaction) {
         if (interaction.channel.parent.name !== interaction.user.username) {
-            await interaction.reply("Failed, this isn't your channel.");
+            await interaction.reply({
+				content: "Failed, this isn't your channel.",
+				ephemeral: true
+			});
             return;
         }
 
@@ -33,6 +36,9 @@ module.exports = {
             SEND_MESSAGES: !interaction.options.getBoolean("readonly") ?? true,
         });
 
-        await interaction.reply(`Successfully allowed ${member.username}!`);
+        await interaction.reply({
+			content: `Successfully allowed ${member.username}!`,
+			ephemeral: true
+		});
     },
 };

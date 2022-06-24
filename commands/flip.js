@@ -12,10 +12,18 @@ module.exports = {
 
         if (number != 0 && !number) number = 1;
         else if (number > 20) {
-            await interaction.reply("The maximum number of coin flips is 20!");
+            await interaction.reply({
+				content: "The maximum number of coin flips is 20!",
+				ephemeral: true
+			});
+
             return;
         } else if (number <= 0) {
-            await interaction.reply("The minimum number of coin flips is 1!");
+            await interaction.reply({
+				content: "The minimum number of coin flips is 1!",
+				ephemeral: true
+			});
+
             return;
         }
 
@@ -33,6 +41,9 @@ module.exports = {
             result = `Tails! (No, with ${number - heads}).`;
         }
 
-        await interaction.reply(`Result: ${result}`);
+        await interaction.reply({
+			content: `Result: ${result}`,
+			ephemeral: true
+		});
     },
 };

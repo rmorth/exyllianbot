@@ -31,7 +31,11 @@ module.exports = {
 		 * Lowest possible is "1m" and it'll be innacurate.
 		 */
 		 if (!timeRegex.test(time)) {
-			await interaction.reply("Invalid time format, look into this command's usage.");
+			await interaction.reply({
+				content: "Invalid time format, look into this command's usage.",
+				ephemeral: true
+			});
+
 			return;
 		}
 
@@ -45,6 +49,9 @@ module.exports = {
 		let message = interaction.options.getString("message");
 		createReminder(userId, message, timestamp);
 
-        await interaction.reply("Successfully created a new reminder!");
+        await interaction.reply({
+			content: "Successfully created a new reminder!",
+			ephemeral: true
+		});
     },
 };
